@@ -37,6 +37,30 @@ module GameBases
 
 		end
 		
+		def empty_spaces
+
+			empty_spaces = []
+
+			@board.each_with_index do |outer, row|
+
+				outer.each_with_index do |inner, col|
+
+					if inner == fill_char
+					
+						space = [row, col]
+
+						empty_spaces <<	space
+
+					end
+
+				end
+
+			end
+
+			empty_spaces
+
+		end
+			
 	end	
 
 	class Referee

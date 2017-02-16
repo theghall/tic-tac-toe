@@ -21,7 +21,7 @@ module TicTacToe
 
 		end
 
-		def take_turn(referee)
+		def take_turn(referee, board)
 
 			print("Enter row: ")
 			row = gets.chomp
@@ -44,7 +44,14 @@ module TicTacToe
 			@piece = "O"
 		end
 
-		def take_turn(board)
+		def take_turn(referee, board)
+
+			avail_spaces = board.empty_spaces
+
+			piece_pos = avail_spaces[rand(avail_spaces.length)]
+
+			referee.place_piece(self, piece_pos[0],piece_pos[1])
+
 		end
 
 	end
@@ -64,11 +71,27 @@ module TicTacToe
 
 		end
 
+		def have_winner?
+
+			false
+
+		end
+
+		def board_full?
+
+			board_full = true
+
+			@board.board.each do |row|
+				board_full &&= !row.include?(@board.fill_char)
+			end
+
+			board_full
+
+		end
+
 		def officiate(player)
 
 			@board = TicTacToeBoard.new 
-
-			@board.display
 
 			player.piece=("X")
 			@players << player
@@ -80,12 +103,29 @@ module TicTacToe
 			@active_players << @players[0]
 			@passive_players << @players[1]
 
+			have_winner = false
+			board_full = false
+
 			while !@game_over
 
 				@board.display
 
-				@active_players[0].take_turn(self)
+				@active_players[0].take_turn(self, @board)
+				
+				@active_players[0], @passive_players[0] = @passive_players[0], @active_players[0]
 
+
+				have_winner = have_winner?
+				board_full = board_full?
+
+				@game_over = have_winner || board_full
+
+			end
+
+			if have_winner
+				puts("We have a winner!")
+			else
+				puts("No winner!")
 			end
 
 		end
