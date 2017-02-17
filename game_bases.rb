@@ -20,6 +20,8 @@ module GameBases
 			@board.each do |row|
 				puts row.each { |c| c }.join(" ")
 			end
+
+			print("\n\n")
 			
 		end
 
@@ -61,6 +63,20 @@ module GameBases
 
 		end
 			
+		def space_empty?(row, col)
+
+			space_empty = false
+
+			if row.between?(0, @board_rows - 1) && col.between?(0, @board_cols - 1)
+
+				space_empty = @board[row][col] == fill_char
+
+			end
+
+			space_empty
+
+		end
+
 	end	
 
 	class Referee
@@ -75,6 +91,7 @@ module GameBases
 		attr_accessor :name
 
 		def initialize(name)
+
 			@name = name
 		end
 

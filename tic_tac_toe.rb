@@ -1,5 +1,18 @@
+#tic_tac_toe.rb
+#
+#
+# Tic Tac Toe is a two player game played on a 3 x 3 grid.  Each player takes
+# turns placing their pieces on the board in an empty space.  One player uses
+# 'X' and player uses 'O'.   The first player to get three of their pieces in 
+# a row vertically or horizontally, or diagonally wins. If all the spaces in 
+# the grid are filled before anyone gets three in a row vertically or hori-
+# zontally,  or diagonally the game is over
+#
+# This module works with a human player and a computer player
+#
+# 20170217	GH
+#
 require "./game_bases"
-require 'byebug'
 
 module TicTacToe
 
@@ -23,13 +36,19 @@ module TicTacToe
 
 		def take_turn(referee, board)
 
-			print("Enter row: ")
-			row = gets.chomp
+			good_move = false
 
-			print("Enter col: ")
-			col = gets.chomp
+			while !good_move
 
-			referee.place_piece(self, row.to_i, col.to_i)
+				print("Enter row: ")
+				row = gets.chomp
+
+				print("Enter col: ")
+				col = gets.chomp
+
+				good_move = referee.place_piece(self, row.to_i - 1, col.to_i - 1)
+
+			end
 
 		end
 
@@ -71,60 +90,13 @@ module TicTacToe
 
 		end
 
-		def have_winner?(piece)
-
-			for x in 0..2
-
-				num_in_col = @board.board.flatten.each_with_index.select {|p,i| p == piece && (i == 0 + x || i == 3 + x || i == 6 + x) }.length
-
-				winner = (num_in_col == 3)
-
-				break if winner
-
-			end
-
-			for x in 0..2 
-
-				num_in_row = @board.board.flatten.each_with_index.select {|p,i| p == piece && i.between?(0 + (x * 3) , 2 + (x * 3))}.length
-
-				winner = (num_in_row == 3)
-
-				break if winner
-
-			end
-
-			winner
-
-		end
-
-		def board_full?
-
-			board_full = true
-
-			@board.board.each do |row|
-				board_full &&= !row.include?(@board.fill_char)
-			end
-
-			board_full
-
-		end
-
 		def officiate(player)
 
-			@board = TicTacToeBoard.new 
-
-			player.piece=("X")
-			@players << player
-
-			comp_player = TicTacToeCompPlayer.new
-			comp_player.piece=("O")
-			@players << comp_player
-
-			@active_players << @players[0]
-			@passive_players << @players[1]
 
 			have_winner = false
 			board_full = false
+
+			set_players(player)
 
 			while !@game_over
 
@@ -142,6 +114,93 @@ module TicTacToe
 
 			end
 
+			display_game_results(have_winner)
+
+		end
+
+		def place_piece(player, row, col)
+
+			valid_move = valid_move?(row, col)
+
+			if valid_move
+
+				puts("#{player.name} plays '#{player.piece}' on #{row + 1}, #{col + 1}")
+
+				@board.put_piece(row, col, player.piece)
+
+			end
+
+			valid_move
+
+		end
+
+		private
+
+		def valid_move?(row, col)
+
+			valid_move = row.between?(0,2) && col.between?(0,2)
+			
+			if valid_move
+
+					valid_move &&= @board.space_empty?(row, col)
+
+					print("Please select an empty space.\n\n") if !valid_move
+
+			else
+
+				print("Please enter a valid row and column.\n\n")
+
+			end
+
+			valid_move
+
+		end
+
+		def choose_piece(player)
+
+			piece = "X"
+
+			got_piece = false
+
+			while !got_piece
+
+				print("#{player.name}, choose your piece ('X' or 'O'): ")
+				piece = gets.chomp
+
+				got_piece = piece == "X" || piece == "O"
+
+				print("Please choose a valid piece.\n\n") if !got_piece
+
+			end
+
+			piece
+
+		end
+
+		def set_players(player)
+
+			@board = TicTacToeBoard.new 
+
+			player.piece = choose_piece(player)
+
+			@players << player
+
+			comp_player = TicTacToeCompPlayer.new
+
+			player.piece == "X" ? comp_player.piece = "O": comp_player.piece = "X"
+
+			@players << comp_player
+
+			@active_players.push(player.piece == "X" ? player: comp_player)
+
+			@passive_players.push(player.piece == "O" ? player: comp_player)
+
+			byebug
+
+		end
+
+		def display_game_results(have_winner)
+
 			@board.display
 
 			if have_winner
@@ -152,9 +211,86 @@ module TicTacToe
 
 		end
 
-		def place_piece(player, row, col)
+		def row_wins?(piece)
+			
+			winner = false
 
-			@board.put_piece(row, col, player.piece)
+			for x in 0..2
+
+				num_in_col = @board.board.flatten.each_with_index.select \
+					{|p,i| p == piece && (i == 0 + x || i == 3 + x || i == 6 + x) }.length
+
+				winner = (num_in_col == 3)
+
+				break if winner
+
+			end
+
+			winner
+
+		end
+
+		def col_wins?(piece)
+
+			winner = false
+
+			for x in 0..2 
+
+				num_in_row = @board.board.flatten.each_with_index.select \
+					{|p,i| p == piece && i.between?(0 + (x * 3) , 2 + (x * 3))}.length
+
+				winner = (num_in_row == 3)
+
+				break if winner
+
+			end
+
+			winner
+
+		end
+
+		def diagonal_wins?(piece)
+
+			winner = false
+
+			for x in 0..2
+
+				num_in_diagonal = @board.board.flatten.each_with_index.select \
+					{|p,i| p == piece && (i == (0 + x) || i == 4 || i == (8 - x)) }.length
+
+				winner = (num_in_diagonal == 3)
+
+				break if winner
+
+			end
+
+			winner
+
+		end
+
+		def have_winner?(piece)
+
+			winner = false
+
+			winner ||= row_wins?(piece)
+			
+			winner ||= col_wins?(piece)
+
+			winner ||= diagonal_wins?(piece)
+
+			winner
+
+		end
+
+		def board_full?
+
+			board_full = true
+
+			@board.board.each do |row|
+				board_full &&= !row.include?(@board.fill_char)
+			end
+
+			board_full
 
 		end
 
