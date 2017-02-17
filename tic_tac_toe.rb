@@ -71,9 +71,29 @@ module TicTacToe
 
 		end
 
-		def have_winner?
+		def have_winner?(piece)
 
-			false
+			for x in 0..2
+
+				num_in_col = @board.board.flatten.each_with_index.select {|p,i| p == piece && (i == 0 + x || i == 3 + x || i == 6 + x) }.length
+
+				winner = (num_in_col == 3)
+
+				break if winner
+
+			end
+
+			for x in 0..2 
+
+				num_in_row = @board.board.flatten.each_with_index.select {|p,i| p == piece && i.between?(0 + (x * 3) , 2 + (x * 3))}.length
+
+				winner = (num_in_row == 3)
+
+				break if winner
+
+			end
+
+			winner
 
 		end
 
@@ -111,19 +131,21 @@ module TicTacToe
 				@board.display
 
 				@active_players[0].take_turn(self, @board)
-				
-				@active_players[0], @passive_players[0] = @passive_players[0], @active_players[0]
 
+				have_winner = have_winner?(@active_players[0].piece)
 
-				have_winner = have_winner?
 				board_full = board_full?
 
 				@game_over = have_winner || board_full
 
+				@active_players[0], @passive_players[0] = @passive_players[0], @active_players[0] if !@game_over
+
 			end
 
+			@board.display
+
 			if have_winner
-				puts("We have a winner!")
+				puts("#{active_players[0].name} is the winner!")
 			else
 				puts("No winner!")
 			end
