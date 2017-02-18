@@ -56,20 +56,126 @@ module TicTacToe
 
 	class TicTacToeCompPlayer < GameBases::Player
 
-		attr_accessor :piece
+		attr_accessor :piece, :level
 
 		def initialize
 			super("Computer")
 			@piece = "O"
+			@level = 1
 		end
 
 		def take_turn(referee, board)
+
+			case @level
+			when 0
+				level_zero(referee, board)
+			when 1
+				level_one(referee, board)
+			else
+				#should not happen, but default to lowest level
+				level_zero(referee, board)
+			end
+
+		end
+
+		private
+
+		def level_zero(referee, board)
 
 			avail_spaces = board.empty_spaces
 
 			piece_pos = avail_spaces[rand(avail_spaces.length)]
 
 			referee.place_piece(self, piece_pos[0],piece_pos[1])
+
+		end
+
+		def block_in_row?(referee, board)
+
+			block_in_row = false
+
+			board.board.each_with_index do |outer, o|
+
+				opp_pieces = outer.each_with_index.select {|p,i| p == (@piece == "X" ? "O": "X") }
+
+				empty_spaces = outer.each_with_index.select {|p,i| p == board.fill_char}
+
+				if opp_pieces.length == 2 && empty_spaces.length == 1
+
+					referee.place_piece(self, o, empty_spaces[0][1])
+
+					block_in_row = true
+
+					break if block_in_row
+
+				end
+
+			end
+
+			block_in_row
+			
+		end
+
+		def block_in_col?(referee, board)
+
+			block_in_col = false
+
+			opp_pieces = Array.new(3)
+			empty_spaces = Array.new(3)
+
+			board.board.each_with_index do |outer, o|
+
+				opp_pieces[o] = (outer.each_with_index.select {|p,i| p == (@piece == "X" ? "O": "X") })
+
+				empty_spaces[o] = (outer.each_with_index.select {|p,i| p == board.fill_char})
+
+			end
+
+		  union = opp_pieces[0]&(opp_pieces[1])
+			
+			if union.length != 0
+
+				row = 2
+
+				empty_pair = empty_spaces[row][union[0][1]]
+
+				byebug if empty_pair.nil?
+
+				col = empty_pair[1]
+
+				block_in_col = true
+
+			else
+
+		  	union = opp_pieces[1]&(opp_pieces[2])
+		
+				if union.length != 0
+
+					row = 0
+
+					empty_pair = empty_spaces[row][union[0][1]]
+
+					col = empty_pair[1]
+
+					block_in_col = true
+
+				end
+
+			end
+
+			referee.place_piece(self, row, col) if block_in_col
+
+			block_in_col
+
+		end
+
+		def level_one(referee, board)
+
+			if !block_in_row?(referee, board)
+				if !block_in_col?(referee, board)
+					level_zero(referee, board)
+				end
+			end
 
 		end
 
@@ -97,6 +203,8 @@ module TicTacToe
 			board_full = false
 
 			set_players(player)
+
+			set_level(player)
 
 			while !@game_over
 
@@ -135,6 +243,7 @@ module TicTacToe
 		end
 
 		private
+
 
 		def valid_move?(row, col)
 
@@ -177,6 +286,33 @@ module TicTacToe
 
 		end
 
+		def set_level(player)
+
+			got_level = false
+
+			while !got_level
+
+				print("#{player.name}, choose the computer play level (E)asy or (T)urbo: ")
+				level = gets.chomp
+
+				level.downcase!
+
+				got_level = true
+
+				case level
+				when "e"
+					@level = 1
+				when "t"
+					@level = 2
+				else
+					print("Please select a valid option.\n\n")
+					got_level = false
+				end
+
+			end
+
+		end
+
 		def set_players(player)
 
 			@board = TicTacToeBoard.new 
@@ -194,8 +330,6 @@ module TicTacToe
 			@active_players.push(player.piece == "X" ? player: comp_player)
 
 			@passive_players.push(player.piece == "O" ? player: comp_player)
-
-			byebug
 
 		end
 
