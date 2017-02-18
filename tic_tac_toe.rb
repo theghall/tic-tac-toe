@@ -137,13 +137,9 @@ module TicTacToe
 
 				row = 2
 
-				empty_pair = empty_spaces[row][union[0][1]]
+				col = union[0][1]
 
-				byebug if empty_pair.nil?
-
-				col = empty_pair[1]
-
-				block_in_col = true
+				block_in_col = true if board.space_empty?(row, col)
 
 			else
 
@@ -153,11 +149,9 @@ module TicTacToe
 
 					row = 0
 
-					empty_pair = empty_spaces[row][union[0][1]]
+					col = union[0][1]
 
-					col = empty_pair[1]
-
-					block_in_col = true
+					block_in_col = true if board.space_empty?(row, col)
 
 				end
 
