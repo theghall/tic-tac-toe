@@ -13,7 +13,7 @@ empty space, or do simple blocking (first found)
 To use you need to create a TicTacToePlayer object
 and a TicTacToeReferee object.  Then the game can
 be played as follows:
-&lt;TicTacToeReferee object&gt;.officiate(&lt&TicTacToePlayer object&gt;)
+&lt;TicTacToeReferee object&gt;.officiate(lt&TicTacToePlayer object&gt;)
 
 To start a new game with an existing TicTacToeReferee then
 use &lt;TicTacToeReferee object&gt;.new_game then call officiate
