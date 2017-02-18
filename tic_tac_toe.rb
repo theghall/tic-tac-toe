@@ -19,7 +19,7 @@
 # <TicTacToeReferee object>.officiate(<TicTacToePlayer object>)
 #
 # To start a new game with an existing TicTacToeReferee then
-# use <TicTacToeReferee object>.new then call officiate
+# use <TicTacToeReferee object>.new_game then call officiate
 #
 # 20170217	GH
 #
