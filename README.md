@@ -13,10 +13,10 @@ empty space, or do simple blocking (first found)
 To use you need to create a TicTacToePlayer object
 and a TicTacToeReferee object.  Then the game can
 be played as follows:
-<TicTacToeReferee object>.officiate(<TicTacToePlayer object>)
+&lt;TicTacToeReferee object&gt;.officiate(&lt&TicTacToePlayer object&gt;)
 
 To start a new game with an existing TicTacToeReferee then
-use <TicTacToeReferee object>.new_game then call officiate
+use &lt;TicTacToeReferee object&gt;.new_game then call officiate
 
 
 game_system.rb is a quick and dirty wrapper around
