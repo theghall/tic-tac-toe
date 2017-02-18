@@ -1,4 +1,9 @@
-require 'byebug'
+#game_bases.rb
+#
+# This file contains base classes for consistent behavior for all grid based
+# board games.  class Referee contains instance variables that are most likely
+# to be consistent across grid board games
+#
 
 module GameBases
 
@@ -11,7 +16,7 @@ module GameBases
 			@board_rows = num_rows
 			@board_cols = num_cols
 
-			@board = Array.new(board_rows, @fill_char) {Array.new(board_cols, @fill_char)}
+			@board = Array.new(board_rows) {Array.new(board_cols, @fill_char)}
 
 		end
 
@@ -31,14 +36,17 @@ module GameBases
 
 		end
 
-		def reset_board
+		def reset
 
 			@board.each do |row|
+
 				row.fill(@fill_char)
+
 			end
 
 		end
 		
+		# Returns 2d array of empty space row, col pairs
 		def empty_spaces
 
 			empty_spaces = []
@@ -82,7 +90,7 @@ module GameBases
 	class Referee
 		
 		attr_accessor :board, :min_players, :max_players, :players, :game_over, :winners, \
-			:turn_number, :active_players, :passive_players
+			:turn, :active_players, :passive_players
 
 	end
 
@@ -93,6 +101,7 @@ module GameBases
 		def initialize(name)
 
 			@name = name
+
 		end
 
 	end

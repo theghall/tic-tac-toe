@@ -3,12 +3,23 @@
 #
 # Tic Tac Toe is a two player game played on a 3 x 3 grid.  Each player takes
 # turns placing their pieces on the board in an empty space.  One player uses
-# 'X' and player uses 'O'.   The first player to get three of their pieces in 
-# a row vertically or horizontally, or diagonally wins. If all the spaces in 
-# the grid are filled before anyone gets three in a row vertically or hori-
-# zontally,  or diagonally the game is over
+# 'X' and player uses 'O'.  The player who has 'X' goes first. The first 
+# player to get three of their pieces in a row vertically or horizontally, or 
+# diagonally wins. If all the spaces in the grid are filled before anyone gets
+# three in a row vertically or horizontally,  or diagonally the game is over
 #
 # This module works with a human player and a computer player
+# 
+# The computer player can either be set to pick a random
+# empty space, or do simple blocking (first found)
+#
+# To use you need to create a TicTacToePlayer object
+# and a TicTacToeReferee object.  Then the game can
+# be played as follows:
+# <TicTacToeReferee object>.officiate(<TicTacToePlayer object>)
+#
+# To start a new game with an existing TicTacToeReferee then
+# use <TicTacToeReferee object>.new then call officiate
 #
 # 20170217	GH
 #
@@ -54,33 +65,52 @@ module TicTacToe
 
 	end
 
+	class CompTurnError < RuntimeError
+
+		def initialize(msg="The computer player encountered an error.")
+			
+			super(msg)
+
+		end
+
+	end
+
 	class TicTacToeCompPlayer < GameBases::Player
+
+		PLAY_LEVEL_EASY = 0
+		PLAY_LEVEL_TURBO = 1
 
 		attr_accessor :piece, :level
 
 		def initialize
 			super("Computer")
 			@piece = "O"
-			@level = 1
+			@level = PLAY_LEVEL_EASY
 		end
 
 		def take_turn(referee, board)
 
 			case @level
-			when 0
-				level_zero(referee, board)
-			when 1
-				level_one(referee, board)
+			when PLAY_LEVEL_EASY
+
+				level_easy(referee, board)
+
+			when PLAY_LEVEL_TURBO
+
+				level_turbo(referee, board)
+
 			else
+			
 				#should not happen, but default to lowest level
-				level_zero(referee, board)
+				level_easy(referee, board)
+
 			end
 
 		end
 
 		private
 
-		def level_zero(referee, board)
+		def level_easy(referee, board)
 
 			avail_spaces = board.empty_spaces
 
@@ -88,8 +118,10 @@ module TicTacToe
 
 			referee.place_piece(self, piece_pos[0],piece_pos[1])
 
+
 		end
 
+		#Blocks if able and returns true if able
 		def block_in_row?(referee, board)
 
 			block_in_row = false
@@ -116,6 +148,7 @@ module TicTacToe
 			
 		end
 
+		#Blocks if able and returns true if able
 		def block_in_col?(referee, board)
 
 			block_in_col = false
@@ -156,6 +189,7 @@ module TicTacToe
 
 		end
 
+		#Blocks if able and returns true if able
 		def block_diagonally?(referee, board)
 
 			block_diagonally = false
@@ -168,28 +202,29 @@ module TicTacToe
 				 corner_pieces_r1 = board.board[0].each_with_index.select \
 					 {|p, i| p == opp_piece && (i == 0 || i == 2)}
 
-				 corner_pieces_r2 = board.board[1].each_with_index.select \
+				 corner_pieces_r2 = board.board[2].each_with_index.select \
 					 {|p, i| p == opp_piece && (i == 0 || i == 2)}
 
-				
-				# Since row is checked first it should never be 2
-				if corner_pieces_r1.length == 1
+
+				#May not block, since the opposite corner may already be 
+				#blocked
+				if corner_pieces_r1.length > 0
 
 					#block opposite corner
 					row = 2
 
 					col = corner_pieces_r1[0][1] == 0 ? 2: 0
 
-					block_diagonally = true
+					block_diagonally = true if board.space_empty?(row, col)
 
-				elsif corner_pieces_r2.length == 1
+				elsif corner_pieces_r2.length > 0
 
 					#block opposite corner
 					row = 0
 
 					col = corner_pieces_r2[0][1] == 0 ? 2: 0
 
-					block_diagonally = true
+					block_diagonally = true if board.space_empty?(row, col)
 
 				end
 
@@ -201,7 +236,7 @@ module TicTacToe
 
 		end
 
-		def level_one(referee, board)
+		def level_turbo(referee, board)
 
 			if !block_in_row?(referee, board)
 
@@ -209,8 +244,8 @@ module TicTacToe
 
 					if !block_diagonally?(referee, board)
 
-						# If no block just do random choice
-						level_zero(referee, board)
+						#If no block just do random choice
+						level_easy(referee, board)
 
 					end
 
@@ -231,7 +266,7 @@ module TicTacToe
 			@players = Array.new
 			@game_over = false
 			@winners = Array.new
-			@turn_number = 1
+			@turn = 1
 			@active_players = Array.new
 			@passive_players = Array.new
 
@@ -239,19 +274,33 @@ module TicTacToe
 
 		def officiate(player)
 
+			@game_over = false
 
 			have_winner = false
+
 			board_full = false
 
-			set_players(player)
-
-			set_level(player)
+			comp_level = set_level(player)
+			
+			set_players(player, comp_level)
 
 			while !@game_over
 
 				@board.display
 
-				@active_players[0].take_turn(self, @board)
+				begin
+
+					@active_players[0].take_turn(self, @board)
+
+				rescue CompTurnError=> e
+		
+					puts e.message
+
+					puts("You can try and play again.")
+
+					break
+
+				end
 
 				have_winner = have_winner?(@active_players[0].piece)
 
@@ -259,11 +308,25 @@ module TicTacToe
 
 				@game_over = have_winner || board_full
 
+				@turn += 1 if !@game_over
+
 				@active_players[0], @passive_players[0] = @passive_players[0], @active_players[0] if !@game_over
 
 			end
 
 			display_game_results(have_winner)
+
+		end
+
+		def new_game
+
+			@players = Array.new
+			@game_over = false
+			@winners = Array.new
+			@turn_number = 1
+			@active_players = Array.new
+			@passive_players = Array.new
+			@board.reset
 
 		end
 
@@ -279,11 +342,7 @@ module TicTacToe
 
 			end
 
-			if player.name == "Computer" && !valid_move
-
-				puts("Internal error: computer tried a move on #{row + 1}, #{col + 1}")
-
-			end
+			raise CompTurnError,  "Internal error: computer tried a move on #{row + 1}, #{col + 1}" if !valid_move
 
 			valid_move
 
@@ -323,6 +382,8 @@ module TicTacToe
 				print("#{player.name}, choose your piece ('X' or 'O'): ")
 				piece = gets.chomp
 
+				piece = piece.upcase
+
 				got_piece = piece == "X" || piece == "O"
 
 				print("Please choose a valid piece.\n\n") if !got_piece
@@ -340,27 +401,36 @@ module TicTacToe
 			while !got_level
 
 				print("#{player.name}, choose the computer play level (E)asy or (T)urbo: ")
-				level = gets.chomp
+				level_input = gets.chomp
 
-				level.downcase!
+				level_input.downcase!
 
 				got_level = true
 
-				case level
+				case level_input
 				when "e"
-					@level = 1
+
+					level = TicTacToeCompPlayer::PLAY_LEVEL_EASY
+
 				when "t"
-					@level = 2
+
+					level = TicTacToeCompPlayer::PLAY_LEVEL_TURBO
+
 				else
+
 					print("Please select a valid option.\n\n")
+
 					got_level = false
+
 				end
 
 			end
 
+			level
+
 		end
 
-		def set_players(player)
+		def set_players(player, comp_level)
 
 			@board = TicTacToeBoard.new 
 
@@ -371,6 +441,8 @@ module TicTacToe
 			comp_player = TicTacToeCompPlayer.new
 
 			player.piece == "X" ? comp_player.piece = "O": comp_player.piece = "X"
+
+			comp_player.level = comp_level
 
 			@players << comp_player
 
@@ -385,7 +457,7 @@ module TicTacToe
 			@board.display
 
 			if have_winner
-				puts("#{active_players[0].name} is the winner!")
+				puts("#{active_players[0].name} is the winner after #{@turn} turns!")
 			else
 				puts("No winner!")
 			end
