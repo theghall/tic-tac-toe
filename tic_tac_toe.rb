@@ -120,38 +120,31 @@ module TicTacToe
 
 			block_in_col = false
 
-			opp_pieces = Array.new(3)
-			empty_spaces = Array.new(3)
+			opp_pieces = Array.new(board.board_rows)
+			empty_spaces = Array.new(board.board_rows)
 
 			board.board.each_with_index do |outer, o|
 
 				opp_pieces[o] = (outer.each_with_index.select {|p,i| p == (@piece == "X" ? "O": "X") })
 
-				empty_spaces[o] = (outer.each_with_index.select {|p,i| p == board.fill_char})
-
 			end
 
-		  union = opp_pieces[0]&(opp_pieces[1])
+			# This will not block at 3,2 or 3,3 if 1,1 and 2,1 were blocked at 3,1
+			# Also, since row is blocked first, if 1,3 and 2,3 were blocked by row
+			# then it will not block at 3,1 or 3,2. 
+			for i in 0..1 do
+
+			  union = opp_pieces[0 + i]&(opp_pieces[1 + i])
 			
-			if union.length != 0
-
-				row = 2
-
-				col = union[0][1]
-
-				block_in_col = true if board.space_empty?(row, col)
-
-			else
-
-		  	union = opp_pieces[1]&(opp_pieces[2])
-		
 				if union.length != 0
 
-					row = 0
+					row = (i == 0 ? 2: 3)
 
 					col = union[0][1]
 
 					block_in_col = true if board.space_empty?(row, col)
+
+					break if block_in_col
 
 				end
 
@@ -163,12 +156,66 @@ module TicTacToe
 
 		end
 
+		def block_diagonally?(referee, board)
+
+			block_diagonally = false
+
+			opp_piece = (@piece == "X" ? "O": "X")
+
+			# No need to check if opponent does not control center
+			if board.board[1][1] == opp_piece
+
+				 corner_pieces_r1 = board.board[0].each_with_index.select \
+					 {|p, i| p == opp_piece && (i == 0 || i == 2)}
+
+				 corner_pieces_r2 = board.board[1].each_with_index.select \
+					 {|p, i| p == opp_piece && (i == 0 || i == 2)}
+
+				
+				# Since row is checked first it should never be 2
+				if corner_pieces_r1.length == 1
+
+					#block opposite corner
+					row = 2
+
+					col = corner_pieces_r1[0][1] == 0 ? 2: 0
+
+					block_diagonally = true
+
+				elsif corner_pieces_r2.length == 1
+
+					#block opposite corner
+					row = 0
+
+					col = corner_pieces_r2[0][1] == 0 ? 2: 0
+
+					block_diagonally = true
+
+				end
+
+			end
+
+			referee.place_piece(self, row, col) if block_diagonally
+
+			block_diagonally
+
+		end
+
 		def level_one(referee, board)
 
 			if !block_in_row?(referee, board)
+
 				if !block_in_col?(referee, board)
-					level_zero(referee, board)
+
+					if !block_diagonally?(referee, board)
+
+						# If no block just do random choice
+						level_zero(referee, board)
+
+					end
+
 				end
+
 			end
 
 		end
@@ -222,13 +269,19 @@ module TicTacToe
 
 		def place_piece(player, row, col)
 
-			valid_move = valid_move?(row, col)
+			valid_move = valid_move?(player, row, col)
 
 			if valid_move
 
 				puts("#{player.name} plays '#{player.piece}' on #{row + 1}, #{col + 1}")
 
 				@board.put_piece(row, col, player.piece)
+
+			end
+
+			if player.name == "Computer" && !valid_move
+
+				puts("Internal error: computer tried a move on #{row + 1}, #{col + 1}")
 
 			end
 
@@ -239,7 +292,7 @@ module TicTacToe
 		private
 
 
-		def valid_move?(row, col)
+		def valid_move?(player, row, col)
 
 			valid_move = row.between?(0,2) && col.between?(0,2)
 			
@@ -247,11 +300,11 @@ module TicTacToe
 
 					valid_move &&= @board.space_empty?(row, col)
 
-					print("Please select an empty space.\n\n") if !valid_move
+					print("#{player.name}, please select an empty space.\n\n") if !valid_move
 
 			else
 
-				print("Please enter a valid row and column.\n\n")
+				print("#{player.name}, please enter a valid row and column.\n\n")
 
 			end
 
