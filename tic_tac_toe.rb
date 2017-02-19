@@ -118,7 +118,6 @@ module TicTacToe
 
 			referee.place_piece(self, piece_pos[0],piece_pos[1])
 
-
 		end
 
 		#Blocks if able and returns true if able
@@ -342,8 +341,6 @@ module TicTacToe
 
 			end
 
-			raise CompTurnError,  "Internal error: computer tried a move on #{row + 1}, #{col + 1}" if !valid_move
-
 			valid_move
 
 		end
@@ -353,19 +350,23 @@ module TicTacToe
 
 		def valid_move?(player, row, col)
 
+			comp_player = (player.class == TicTacToe::TicTacToeCompPlayer)
+
 			valid_move = row.between?(0,2) && col.between?(0,2)
 			
 			if valid_move
 
 					valid_move &&= @board.space_empty?(row, col)
 
-					print("#{player.name}, please select an empty space.\n\n") if !valid_move
+					print("#{player.name}, please select an empty space.\n\n") if !valid_move && !comp_player
 
 			else
 
-				print("#{player.name}, please enter a valid row and column.\n\n")
+				print("#{player.name}, please enter a valid row and column.\n\n") if !comp_player
 
 			end
+
+			raise CompTurnError,  "Internal error: computer tried a move on #{row + 1}, #{col + 1}"  if comp_player && !valid_move
 
 			valid_move
 
