@@ -19,6 +19,7 @@ To start a new game with an existing TicTacToeReferee then
 use &lt;TicTacToeReferee object&gt;.new_game then call officiate
 
 
-game_system.rb is a quick and dirty wrapper around
-the classes
+game_system.rb is a quick and dirty wrapper around the classes. It also
+shows that you can have two computer players duke it out. They will both
+play at the Turbo level.
 
