@@ -82,8 +82,8 @@ module TicTacToe
 
 		attr_accessor :piece, :level
 
-		def initialize
-			super("Computer")
+		def initialize(name = "Computer")
+			super(name)
 			@piece = "O"
 			@level = PLAY_LEVEL_EASY
 		end
@@ -279,7 +279,7 @@ module TicTacToe
 
 			board_full = false
 
-			comp_level = set_level(player)
+			comp_level = get_level(player)
 			
 			set_players(player, comp_level)
 
@@ -322,7 +322,7 @@ module TicTacToe
 			@players = Array.new
 			@game_over = false
 			@winners = Array.new
-			@turn_number = 1
+			@turn = 1
 			@active_players = Array.new
 			@passive_players = Array.new
 			@board.reset
@@ -374,9 +374,15 @@ module TicTacToe
 
 		def choose_piece(player)
 
-			piece = "X"
-
 			got_piece = false
+
+			if player.class == TicTacToe::TicTacToeCompPlayer
+
+				piece = ["X", "O"][rand(2)]
+
+				got_piece = true
+
+			end
 
 			while !got_piece
 
@@ -395,9 +401,17 @@ module TicTacToe
 
 		end
 
-		def set_level(player)
+		def get_level(player)
 
 			got_level = false
+
+			if player.class == TicTacToe::TicTacToeCompPlayer
+
+				level = TicTacToeCompPlayer::PLAY_LEVEL_TURBO
+
+				got_level = true
+
+			end
 
 			while !got_level
 
@@ -436,6 +450,8 @@ module TicTacToe
 			@board = TicTacToeBoard.new 
 
 			player.piece = choose_piece(player)
+
+			player.level = comp_level if player.class == TicTacToe::TicTacToeCompPlayer
 
 			@players << player
 

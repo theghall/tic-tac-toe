@@ -13,10 +13,24 @@ name = gets.chomp
 
 print("\n\n")
 
-play = true
+got_players = false
 
-player = TicTacToe::TicTacToePlayer.new(name)
+while !got_players
+
+	print("How many players (0,2)? ")
+
+	num_players = gets.chomp
+
+	num_players = num_players.to_i
+
+	got_players = [0,2].include?(num_players)
+
+end
+
+player = num_players == 2 ? TicTacToe::TicTacToePlayer.new(name): TicTacToe::TicTacToeCompPlayer.new("Joshua")
 referee = TicTacToe::TicTacToeReferee.new
+
+play = true
 
 while play
 
@@ -35,4 +49,4 @@ while play
 end 
 
 puts("\n\n")
-puts("#{player.name}, thanks for playing!")
+puts("#{name}, thanks for playing!")
