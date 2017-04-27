@@ -1,3 +1,5 @@
+require './lib/game_bases'
+
 module TicTacToe
   class TicTacToeBoard < GameBases::GameBoard
 
