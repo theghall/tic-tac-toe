@@ -8,4 +8,14 @@ module TicTacToe
    end
 
   end
+
+  class TicTacToePlayer < GameBases::Player
+
+    def initialize(name)
+      super(name)
+    end
+
+    def take_turn(referee, board)
+    end
+  end
 end

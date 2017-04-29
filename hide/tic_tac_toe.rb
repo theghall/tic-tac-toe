@@ -52,11 +52,12 @@ module TicTacToe
 
       while !good_move
 
-        print("Enter row : ")
-        row = gets.chomp
+        print("Enter pos [row, col]: ")
+        pos = gets.chomp.split(',')
 
-        print("Enter col : ")
-        col = gets.chomp
+        row = pos[0]
+
+        col = pos[1]
 
         good_move = referee.place_piece(self, row.to_i - 1, col.to_i - 1)
 

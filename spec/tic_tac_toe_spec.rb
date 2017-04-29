@@ -83,4 +83,27 @@ describe "TicTacToeBoard" do
       end
    end
   end
+
+  describe "TicTacToePlayer" do
+
+    describe "attributes" do
+
+      let(:aplayer) { TicTacToe::TicTacToePlayer.new('John') }
+
+      it { expect(aplayer).to respond_to(:name) }
+      it { expect(aplayer).to respond_to(:take_turn) }
+    end
+  end
+
+  describe ".name" do
+
+    let(:aplayer) { TicTacToe::TicTacToePlayer.new('John') }
+
+    context "Create player with name 'John' and call .name" do
+      it "returns 'John' as name" do
+        expect(aplayer.name).to eql('John')
+      end
+    end
+  end
+      
 end
