@@ -83,27 +83,89 @@ describe "TicTacToeBoard" do
       end
    end
   end
+end
 
-  describe "TicTacToePlayer" do
+describe "TicTacToePlayer" do
 
-    describe "attributes" do
+  describe "attributes" do
 
-      let(:aplayer) { TicTacToe::TicTacToePlayer.new('John') }
+    let(:aplayer) { TicTacToe::TicTacToePlayer.new('John','X') }
 
-      it { expect(aplayer).to respond_to(:name) }
-      it { expect(aplayer).to respond_to(:take_turn) }
-    end
+    it { expect(aplayer).to respond_to(:name) }
+    it { expect(aplayer).to respond_to(:token) }
+    it { expect(aplayer).to respond_to(:take_turn) }
   end
 
   describe ".name" do
 
-    let(:aplayer) { TicTacToe::TicTacToePlayer.new('John') }
+    let(:aplayer) { TicTacToe::TicTacToePlayer.new('John','X') }
 
     context "Create player with name 'John' and call .name" do
       it "returns 'John' as name" do
         expect(aplayer.name).to eql('John')
       end
     end
+
+    context "Create player with token 'X' and call .token" do
+      it "returns 'X'" do
+        expect(aplayer.token).to eql('X')
+      end
+    end
   end
-      
+end
+
+describe "TicTacToeReferee" do
+
+  describe "attributes" do
+
+    let (:areferee) { TicTacToe::TicTacToeReferee.new }
+
+    it { expect(areferee).to respond_to(:officiate) }
+    it { expect(areferee).to respond_to(:new_game) }
+    it { expect(areferee).to respond_to(:place_piece) }
+  end
+
+  describe ".place_piece" do
+
+    let (:player1) { TicTacToe::TicTacToePlayer.new('John', 'X') }
+    let (:player2) { TicTacToe::TicTacToePlayer.new('Jane', 'O') }
+    let (:areferee) { TicTacToe::TicTacToeReferee.new }
+
+    context "Player1 puts piece on 0,3" do
+      it "returns false" do
+        expect(areferee.place_piece(player1,0,3)).to eql(false)
+      end
+    end
+
+    context "Player1 puts piece on 3,0" do
+      it "returns false" do
+        expect(areferee.place_piece(player1,3,0)).to eql(false)
+      end
+    end
+
+    context "Player1 puts piece on -1,0" do
+      it "returns false" do
+       expect(areferee.place_piece(player1,-1,0)).to eql(false)
+      end
+    end
+
+    context "Player1 puts piece on 0,-1" do
+      it "returns false" do
+        expect(areferee.place_piece(player1,0,-1)).to eql(false)
+      end
+    end
+
+    context "Player1 puts piece on 0,0 on empty board" do
+      it "returns true" do
+        expect(areferee.place_piece(player1,0,0)).to eql(true)
+      end
+    end
+
+    context "Player1 puts piece on 0,0 on board with token on 0,0" do
+      it "returns false" do
+        place_piece(player1,0,0)
+        expect(areferee.place_piece(player2,0,0)).to eql(false)
+      end
+    end
+  end
 end

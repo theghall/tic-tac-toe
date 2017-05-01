@@ -10,12 +10,29 @@ module TicTacToe
   end
 
   class TicTacToePlayer < GameBases::Player
+    attr_accessor :token
 
-    def initialize(name)
+    def initialize(name, token)
+      @token = token
+
       super(name)
     end
 
     def take_turn(referee, board)
+    end
+  end
+
+  class TicTacToeReferee < GameBases::Referee
+    def initialize
+    end
+
+    def officiate
+    end
+
+    def new_game
+    end
+
+    def place_piece(player, row, col)
     end
   end
 end
