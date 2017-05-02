@@ -26,7 +26,7 @@ module TicTacToe
     def initialize
     end
 
-    def officiate
+    def officiate(player1, player2)
     end
 
     def new_game
