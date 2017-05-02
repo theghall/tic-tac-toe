@@ -268,12 +268,13 @@ module TicTacToe
       @game_over = false
       @winners = Array.new
       @turn = 1
+      @board = TicTacToe::TicTacToeBoard.new
       @active_players = Array.new
       @passive_players = Array.new
 
     end
 
-    def officiate(player)
+    def officiate(player1, player2)
 
       @game_over = false
 
@@ -281,9 +282,9 @@ module TicTacToe
 
       board_full = false
 
-      comp_level = get_level(player)
+      comp_level = player2.class == TicTacToe::TicTacToeCompPlayer ? get_level(player1) : nil
       
-      set_players(player, comp_level)
+      setup_players(player1, player2, comp_level)
 
       while !@game_over
 
@@ -403,11 +404,11 @@ module TicTacToe
 
     end
 
-    def get_level(player)
+    def get_level(player1)
 
       got_level = false
 
-      if player.class == TicTacToe::TicTacToeCompPlayer
+      if player1class == TicTacToe::TicTacToeCompPlayer
 
         level = TicTacToeCompPlayer::PLAY_LEVEL_TURBO
 
@@ -417,7 +418,7 @@ module TicTacToe
 
       while !got_level
 
-        print("# {player.name}, choose the computer play level (E)asy or (T)urbo : ")
+        print("# {player1.name}, choose the computer play level (E)asy or (T)urbo : ")
         level_input = gets.chomp
 
         level_input.downcase!
@@ -447,27 +448,19 @@ module TicTacToe
 
     end
 
-    def set_players(player, comp_level)
+    def setup_players(player1, player2, comp_level)
 
       @board = TicTacToeBoard.new 
 
-      player.piece = choose_piece(player)
+      player1.level = comp_level if player1.class == TicTacToe::TicTacToeCompPlayer
 
-      player.level = comp_level if player.class == TicTacToe::TicTacToeCompPlayer
+      player2.level = comp_level if player2.class == TicTacToe::TicTacToeCompPlayer
 
-      @players << player
+      @players << player1 << player2
 
-      comp_player = TicTacToeCompPlayer.new
+      @active_players << player1
 
-      player.piece == 'X' ? comp_player.piece = 'O' : comp_player.piece = 'X'
-
-      comp_player.level = comp_level
-
-      @players << comp_player
-
-      @active_players.push(player.piece == 'X' ? player : comp_player)
-
-      @passive_players.push(player.piece == 'O' ? player : comp_player)
+      @passive_players << player2
 
     end
 

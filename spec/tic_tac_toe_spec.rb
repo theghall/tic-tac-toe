@@ -265,4 +265,28 @@ describe "TicTacToeReferee" do
       end
     end
   end
+
+  describe ".new_game" do
+
+    let (:player1) { TicTacToe::TicTacToePlayer.new('John', 'X') }
+    let (:player2) { TicTacToe::TicTacToePlayer.new('Jane', 'O') }
+    let (:areferee) { TicTacToe::TicTacToeReferee.new }
+
+    context "After a game is played, call .new_game" do
+      it "is ready to start a new game" do
+        allow(player1).to receive(:gets).and_return('0',',','0','0',',','1','1',',','0','2',',','1','1',',','2')
+        allow(player2).to receive(:gets).and_return('1',',','1','0',',','2','2',',','0','2',',','2')
+        areferee.officiate(player1, player2)
+        areferee.new_game
+
+        expect(areferee.players).to eql([])
+        expect(areferee.game_over).to eql(false)
+        expect(areferee.winners).to eql([])
+        expect(areferee.turn).to eql(1)
+        expect(areferee.active_players).to eql([])
+        expect(areferee.passive_players).to eql([])
+        expect{areferee.board.display}.to output("/. \. \.\n\. \. \.\n\. \. \.\n/").to_stdout
+       end
+    end
+  end
 end

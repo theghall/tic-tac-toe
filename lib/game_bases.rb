@@ -80,6 +80,9 @@ module GameBases
 
 	class Referee
 		
+		attr_accessor :board, :min_players, :max_players, :players, :game_over, :winners, \
+			:turn, :active_players, :passive_players
+
 	end
 
 	class Player
