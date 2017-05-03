@@ -175,93 +175,93 @@ describe "TicTacToeReferee" do
     let (:player2) { TicTacToe::TicTacToePlayer.new('Jane', 'O') }
     let (:areferee) { TicTacToe::TicTacToeReferee.new }
 
-    context "Player1 puts 3 in a row in row 0" do
-
-      it "Displays 'John is the winner'" do
-        allow(player1).to receive(:gets).and_return('0',',','0','0',',','1','0',',','2')
-        allow(player2).to receive(:gets).and_return('1',',','0','1',',','1')
-
-        expect{areferee.officiate(player1,player2)}.to output(/X X X\nO O \.\n\.\.\.\nJohn is the winner/).to_stdout
-      end
-    end
-
     context "Player1 puts 3 in a row in row 1" do
 
       it "Displays 'John is the winner'" do
-        allow(player1).to receive(:gets).and_return('1',',','0','1',',','1','1',',','2')
-        allow(player2).to receive(:gets).and_return('2',',','0','2',',','1')
+        allow(player1).to receive(:gets).and_return('1,1','1,2','1,3')
+        allow(player2).to receive(:gets).and_return('2,1','2,2')
 
-        expect{areferee.officiate(player1,player2)}.to output(/\. \. \.\nX X X X\nO O \.\nJohn is the winner/).to_stdout
+        expect{areferee.officiate(player1,player2)}.to output(/X X X\nO O \.\n\. \. \.\n\n\nJohn is the winner/).to_stdout
       end
     end
 
     context "Player1 puts 3 in a row in row 2" do
 
       it "Displays 'John is the winner'" do
-        allow(player1).to receive(:gets).and_return('2',',','0','2',',','1','2',',','2')
-        allow(player2).to receive(:gets).and_return('1',',','0','1',',','1')
+        allow(player1).to receive(:gets).and_return('2,1','2,2','2,3')
+        allow(player2).to receive(:gets).and_return('3,1','3,2')
 
-        expect{areferee.officiate(player1,player2)}.to output(/\. \. \.\nO O \.\nX X X\nJohn is the winner/).to_stdout
+        expect{areferee.officiate(player1,player2)}.to output(/\. \. \.\nX X X\nO O \.\n\n\nJohn is the winner/).to_stdout
       end
     end
 
-    context "Player1 puts 3 in a row in col 0" do
+    context "Player1 puts 3 in a row in row 3" do
 
       it "Displays 'John is the winner'" do
-        allow(player1).to receive(:gets).and_return('0',',','0','0',',','1','0',',','2')
-        allow(player2).to receive(:gets).and_return('1',',','0','1',',','1')
+        allow(player1).to receive(:gets).and_return('3,1','3,2','3,3')
+        allow(player2).to receive(:gets).and_return('2,1','2,2')
 
-        expect{areferee.officiate(player1,player2)}.to output(/X O \.\nX O \.\nX \. \.\nJohn is the winner/).to_stdout
+        expect{areferee.officiate(player1,player2)}.to output(/\. \. \.\nO O \.\nX X X\n\n\nJohn is the winner/).to_stdout
       end
     end
 
     context "Player1 puts 3 in a row in col 1" do
 
       it "Displays 'John is the winner'" do
-        allow(player1).to receive(:gets).and_return('1',',','0','1',',','1','1',',','2')
-        allow(player2).to receive(:gets).and_return('2',',','0','2',',','1')
+        allow(player1).to receive(:gets).and_return('1,1','2,1','3,1')
+        allow(player2).to receive(:gets).and_return('1,2','2,2')
 
-        expect{areferee.officiate(player1,player2)}.to output(/\. X O\n. X O \.\n\. X \.\nJohn is the winner/).to_stdout
+        expect{areferee.officiate(player1,player2)}.to output(/X O \.\nX O \.\nX \. \.\n\n\nJohn is the winner/).to_stdout
       end
     end
 
     context "Player1 puts 3 in a row in col 2" do
 
       it "Displays 'John is the winner'" do
-        allow(player1).to receive(:gets).and_return('2',',','0','2',',','1','2',',','2')
-        allow(player2).to receive(:gets).and_return('1',',','0','1',',','1')
+        allow(player1).to receive(:gets).and_return('1,2','2,2','3,2')
+        allow(player2).to receive(:gets).and_return('1,3','2,3')
 
-        expect{areferee.officiate(player1,player2)}.to output(/\. O X\n. O X \.\n\. \. X\nJohn is the winner/).to_stdout
+        expect{areferee.officiate(player1,player2)}.to output(/\. X O\n. X O\n\. X \.\n\n\nJohn is the winner/).to_stdout
+      end
+    end
+
+    context "Player1 puts 3 in a row in col 3" do
+
+      it "Displays 'John is the winner'" do
+        allow(player1).to receive(:gets).and_return('1,3','2,3','3,3')
+        allow(player2).to receive(:gets).and_return('1,2','2,2')
+
+        expect{areferee.officiate(player1,player2)}.to output(/\. O X\n\. O X\n\. \. X\n\n\nJohn is the winner/).to_stdout
       end
     end
 
     context "Player1 puts 3 in a row diagonally from top left" do
 
       it "Displays 'John is the winner'" do
-        allow(player1).to receive(:gets).and_return('0',',','0','1',',','1','2',',','2')
-        allow(player2).to receive(:gets).and_return('1',',','0','2',',','0')
+        allow(player1).to receive(:gets).and_return('1,1','2,2','3,3')
+        allow(player2).to receive(:gets).and_return('2,1','3,1')
 
-        expect{areferee.officiate(player1,player2)}.to output(/X \. \.\nO X \.\nO \. X\nJohn is the winner/).to_stdout
+        expect{areferee.officiate(player1,player2)}.to output(/X \. \.\nO X \.\nO \. X\n\n\nJohn is the winner/).to_stdout
       end
     end
 
     context "Player1 puts 3 in a row diagonally from top right" do
 
       it "Displays 'John is the winner'" do
-        allow(player1).to receive(:gets).and_return('0',',','2','1',',','1','2',',','0')
-        allow(player2).to receive(:gets).and_return('1',',','0','0',',','0')
+        allow(player1).to receive(:gets).and_return('1,3','2,2','3,1')
+        allow(player2).to receive(:gets).and_return('2,1','1,1')
 
-        expect{areferee.officiate(player1,player2)}.to output(/O \. X\nO X \.\nX \. \.\nJohn is the winner/).to_stdout
+        expect{areferee.officiate(player1,player2)}.to output(/O \. X\nO X \.\nX \. \.\n\n\nJohn is the winner/).to_stdout
       end
     end
 
     context "Player1 and Player2 place tokens for a draw" do
 
       it "Displays 'Game is a draw'" do
-        allow(player1).to receive(:gets).and_return('0',',','0','0',',','1','1',',','0','2',',','1','1',',','2')
-        allow(player2).to receive(:gets).and_return('1',',','1','0',',','2','2',',','0','2',',','2')
+        allow(player1).to receive(:gets).and_return('1,1','2,1','1,3','3,2','3,3')
+        allow(player2).to receive(:gets).and_return('2,2','3,1','1,2','2,3')
 
-        expect{areferee.officiate(player1,player2)}.to output(/X X O\nX O X\nO X O\nGame is a draw/).to_stdout
+        expect{areferee.officiate(player1,player2)}.to output(/X O X\nX O O\nO X X\n\n\nNo winner/).to_stdout
       end
     end
   end
@@ -274,8 +274,8 @@ describe "TicTacToeReferee" do
 
     context "After a game is played, call .new_game" do
       it "is ready to start a new game" do
-        allow(player1).to receive(:gets).and_return('0',',','0','0',',','1','1',',','0','2',',','1','1',',','2')
-        allow(player2).to receive(:gets).and_return('1',',','1','0',',','2','2',',','0','2',',','2')
+        allow(player1).to receive(:gets).and_return('1,1','1,2','2,1','3,2','2,3')
+        allow(player2).to receive(:gets).and_return('2,2','1,3','3,1','3,3')
         areferee.officiate(player1, player2)
         areferee.new_game
 
@@ -285,7 +285,7 @@ describe "TicTacToeReferee" do
         expect(areferee.turn).to eql(1)
         expect(areferee.active_players).to eql([])
         expect(areferee.passive_players).to eql([])
-        expect{areferee.board.display}.to output("/. \. \.\n\. \. \.\n\. \. \.\n/").to_stdout
+        expect{areferee.board.display}.to output(/\. \. \.\n\. \. \.\n\. \. \.\n/).to_stdout
        end
     end
   end
