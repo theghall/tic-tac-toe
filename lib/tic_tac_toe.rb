@@ -175,9 +175,9 @@ module TicTacToe
     end
 
     def level_turbo(referee, board)
-      if !block_in_row?(referee, board)
-        if !block_in_col?(referee, board)
-          if !block_diagonally?(referee, board)
+      unless block_in_row?(referee, board)
+        unless block_in_col?(referee, board)
+          unless block_diagonally?(referee, board)
             # If no block just do random choice
             level_easy(referee, board)
           end
@@ -363,11 +363,11 @@ module TicTacToe
       winner = false
 
       (0..2).each do |x|
-        num_in_col = @board.board.flatten.each_with_index.select \
-          { |p, i| p == piece && \
-            (i == 0 + x || i == 3 + x || i == 6 + x) }.length
+        num_in_col = @board.board.flatten.each_with_index.select do |p, i|
+          p == piece && (i == 0 + x || i == 3 + x || i == 6 + x)
+        end
 
-        winner = (num_in_col == 3)
+        winner = (num_in_col.length == 3)
 
         break if winner
       end
@@ -379,11 +379,11 @@ module TicTacToe
       winner = false
 
       (0..2).each do |x|
-        num_in_row = @board.board.flatten.each_with_index.select \
-          { |p, i| p == piece && \
-            i.between?(0 + (x * 3), 2 + (x * 3))}.length
+        num_in_row = @board.board.flatten.each_with_index.select do |p, i| 
+          p == piece && i.between?(0 + (x * 3), 2 + (x * 3))
+        end
 
-        winner = (num_in_row == 3)
+        winner = (num_in_row.length == 3)
 
         break if winner
       end
@@ -395,11 +395,11 @@ module TicTacToe
       winner = false
 
       (0..2).each do |x|
-        num_in_diagonal = @board.board.flatten.each_with_index.select \
-          { |p, i| p == piece && \
-            (i == (0 + x) || i == 4 || i == (8 - x)) }.length
+        num_in_diagonal = @board.board.flatten.each_with_index.select do |p, i| 
+          p == piece && (i == (0 + x) || i == 4 || i == (8 - x))
+        end
 
-        winner = (num_in_diagonal == 3)
+        winner = (num_in_diagonal.length == 3)
 
         break if winner
       end
