@@ -89,7 +89,7 @@ describe "TicTacToePlayer" do
 
   describe "attributes" do
 
-    let(:aplayer) { TicTacToe::TicTacToePlayer.new('John','X') }
+    let(:aplayer) { TicTacToe::TicTacToePlayer.new('X','John') }
 
     it { expect(aplayer).to respond_to(:name) }
     it { expect(aplayer).to respond_to(:token) }
@@ -98,7 +98,7 @@ describe "TicTacToePlayer" do
 
   describe ".name" do
 
-    let(:aplayer) { TicTacToe::TicTacToePlayer.new('John','X') }
+    let(:aplayer) { TicTacToe::TicTacToePlayer.new('X','John') }
 
     context "Create player with name 'John' and call .name" do
       it "returns 'John' as name" do
@@ -127,8 +127,8 @@ describe "TicTacToeReferee" do
 
   describe ".place_piece" do
 
-    let (:player1) { TicTacToe::TicTacToePlayer.new('John', 'X') }
-    let (:player2) { TicTacToe::TicTacToePlayer.new('Jane', 'O') }
+    let (:player1) { TicTacToe::TicTacToePlayer.new('X','John') }
+    let (:player2) { TicTacToe::TicTacToePlayer.new('O','Jane') }
     let (:areferee) { TicTacToe::TicTacToeReferee.new }
 
     context "Player1 puts piece on 0,3" do
@@ -171,8 +171,8 @@ describe "TicTacToeReferee" do
 
   describe ".officiate" do
 
-    let (:player1) { TicTacToe::TicTacToePlayer.new('John', 'X') }
-    let (:player2) { TicTacToe::TicTacToePlayer.new('Jane', 'O') }
+    let (:player1) { TicTacToe::TicTacToePlayer.new('X','John') }
+    let (:player2) { TicTacToe::TicTacToePlayer.new('O','Jane') }
     let (:areferee) { TicTacToe::TicTacToeReferee.new }
 
     context "Player1 puts 3 in a row in row 1" do
@@ -268,8 +268,8 @@ describe "TicTacToeReferee" do
 
   describe ".new_game" do
 
-    let (:player1) { TicTacToe::TicTacToePlayer.new('John', 'X') }
-    let (:player2) { TicTacToe::TicTacToePlayer.new('Jane', 'O') }
+    let (:player1) { TicTacToe::TicTacToePlayer.new('X','John') }
+    let (:player2) { TicTacToe::TicTacToePlayer.new('O','Jane') }
     let (:areferee) { TicTacToe::TicTacToeReferee.new }
 
     context "After a game is played, call .new_game" do
