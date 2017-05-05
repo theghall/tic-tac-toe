@@ -1,5 +1,5 @@
 Inspecting 1 file
-C
+W
 
 Offenses:
 
@@ -12,84 +12,60 @@ tic_tac_toe.rb:83:5: C: Method has too many lines. [11/10]
 tic_tac_toe.rb:91:9: C: Use next to skip iteration.
         if opp_pieces.length == 2 && empty_spaces.length == 1
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:105:5: C: Assignment Branch Condition size for block_in_col? is too high. [23.85/15]
+tic_tac_toe.rb:105:5: C: Assignment Branch Condition size for block_in_col? is too high. [22.74/15]
     def block_in_col?(referee, board)
     ^^^
 tic_tac_toe.rb:105:5: C: Cyclomatic complexity for block_in_col? is too high. [7/6]
     def block_in_col?(referee, board)
     ^^^
-tic_tac_toe.rb:105:5: C: Method has too many lines. [17/10]
+tic_tac_toe.rb:105:5: C: Method has too many lines. [19/10]
     def block_in_col?(referee, board) ...
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:121:9: C: Use next to skip iteration.
+tic_tac_toe.rb:116:32: W: Unused block argument - i. If it's necessary, use _ or _i as an argument name to indicate that it won't be used.
+                         { |p, i| p == (@piece == 'X' ? 'O' : 'X') })
+                               ^
+tic_tac_toe.rb:125:9: C: Use next to skip iteration.
         unless union.empty?
         ^^^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:139:5: C: Assignment Branch Condition size for block_diagonally? is too high. [35.96/15]
+tic_tac_toe.rb:143:5: C: Assignment Branch Condition size for block_diagonally? is too high. [35.96/15]
     def block_diagonally?(referee, board)
     ^^^
-tic_tac_toe.rb:139:5: C: Cyclomatic complexity for block_diagonally? is too high. [14/6]
+tic_tac_toe.rb:143:5: C: Cyclomatic complexity for block_diagonally? is too high. [14/6]
     def block_diagonally?(referee, board)
     ^^^
-tic_tac_toe.rb:139:5: C: Method has too many lines. [19/10]
+tic_tac_toe.rb:143:5: C: Method has too many lines. [19/10]
     def block_diagonally?(referee, board) ...
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:139:5: C: Perceived complexity for block_diagonally? is too high. [15/7]
+tic_tac_toe.rb:143:5: C: Perceived complexity for block_diagonally? is too high. [15/7]
     def block_diagonally?(referee, board)
     ^^^
-tic_tac_toe.rb:152:1: C: Extra blank line detected.
-tic_tac_toe.rb:178:7: C: Use a guard clause instead of wrapping the code inside a conditional expression.
+tic_tac_toe.rb:156:1: C: Extra blank line detected.
+tic_tac_toe.rb:182:7: C: Use a guard clause instead of wrapping the code inside a conditional expression.
       unless block_in_row?(referee, board)
       ^^^^^^
-tic_tac_toe.rb:189:3: C: Class has too many lines. [156/100]
+tic_tac_toe.rb:194:3: C: Class has too many lines. [159/100]
   class TicTacToeReferee < GameBases::Referee ...
   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:189:3: C: Missing top-level class documentation comment.
-  class TicTacToeReferee < GameBases::Referee
-  ^^^^^
-tic_tac_toe.rb:210:5: C: Method has too many lines. [11/10]
+tic_tac_toe.rb:215:5: C: Method has too many lines. [13/10]
     def officiate(player1, player2) ...
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:224:9: C: Favor a normal unless-statement over a modifier clause in a multiline statement.
-        @active_players[0], @passive_players[0] = \ ...
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:232:7: C: Redundant begin block detected.
+tic_tac_toe.rb:239:7: C: Redundant begin block detected.
       begin
       ^^^^^
-tic_tac_toe.rb:275:5: C: Assignment Branch Condition size for valid_move? is too high. [17.03/15]
+tic_tac_toe.rb:282:5: C: Assignment Branch Condition size for valid_move? is too high. [18.81/15]
     def valid_move?(player, row, col)
     ^^^
-tic_tac_toe.rb:275:5: C: Cyclomatic complexity for valid_move? is too high. [8/6]
+tic_tac_toe.rb:282:5: C: Cyclomatic complexity for valid_move? is too high. [8/6]
     def valid_move?(player, row, col)
     ^^^
-tic_tac_toe.rb:275:5: C: Method has too many lines. [13/10]
+tic_tac_toe.rb:282:5: C: Method has too many lines. [12/10]
     def valid_move?(player, row, col) ...
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:275:5: C: Perceived complexity for valid_move? is too high. [9/7]
+tic_tac_toe.rb:282:5: C: Perceived complexity for valid_move? is too high. [8/7]
     def valid_move?(player, row, col)
     ^^^
-tic_tac_toe.rb:294:7: C: Favor a normal if-statement over a modifier clause in a multiline statement.
-      raise CompTurnError, \ ...
-      ^^^^^^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:295:9: C: Align the parameters of a method call if they span more than one line.
-        "Internal error : computer tried a move on \ ...
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:301:5: C: Method has too many lines. [22/10]
-    def get_level(player1) ...
-    ^^^^^^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:337:81: C: Line is too long. [82/80]
-        player2.class == TicTacToe::TicTacToeCompPlayer ? get_level(player1) : nil
-                                                                                ^^
-tic_tac_toe.rb:339:7: C: Favor a normal if-statement over a modifier clause in a multiline statement.
-      player1.level = \ ...
-      ^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:342:7: C: Favor a normal if-statement over a modifier clause in a multiline statement.
-      player2.level = \ ...
-      ^^^^^^^^^^^^^^^^^
-tic_tac_toe.rb:382:75: C: Trailing whitespace detected.
-        num_in_row = @board.board.flatten.each_with_index.select do |p, i| 
-                                                                          ^
-tic_tac_toe.rb:398:80: C: Trailing whitespace detected.
-        num_in_diagonal = @board.board.flatten.each_with_index.select do |p, i| 
-                                                                               ^
+tic_tac_toe.rb:303:5: C: Method has too many lines. [17/10]
+    def choose_level(player) ...
+    ^^^^^^^^^^^^^^^^^^^^^^^^
 
-1 file inspected, 30 offenses detected
+1 file inspected, 22 offenses detected

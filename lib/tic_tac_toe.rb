@@ -103,13 +103,17 @@ module TicTacToe
 
     # Blocks if able and returns true if able
     def block_in_col?(referee, board)
+      row = nil
+
+      col = nil
+
       block_in_col = false
 
       opp_pieces = Array.new(board.board_rows)
 
       board.board.each_with_index do |outer, o|
-        opp_pieces[o] = (outer.each.select \
-                         { |p| p == (@piece == 'X' ? 'O' : 'X') })
+        opp_pieces[o] = (outer.each_with_index.select \
+                         { |p, i| p == (@piece == 'X' ? 'O' : 'X') })
       end
 
       # This will not block at 3,2 or 3,3 if 1,1 and 2,1 were blocked at 3,1
@@ -186,6 +190,7 @@ module TicTacToe
     end
   end
 
+  # Checks for legal moves
   class TicTacToeReferee < GameBases::Referee
     def initialize
       @min_players = 2
@@ -221,8 +226,10 @@ module TicTacToe
 
         @turn += 1 unless @game_over
 
-        @active_players[0], @passive_players[0] = \
-          @passive_players[0], @active_players[0] unless @game_over
+        unless @game_over
+          @active_players[0], @passive_players[0] =  \
+            @passive_players[0], @active_players[0]
+        end
       end
 
       display_game_results(winner)
@@ -277,43 +284,30 @@ module TicTacToe
 
       valid_move = row.between?(0, 2) && col.between?(0, 2)
 
-      if valid_move
+      print("#{player.name}, please enter a valid row and column.\n\n") \
+        if !valid_move && !comp_player
 
-        valid_move &&= @board.space_empty?(row, col)
+      valid_move &&= @board.space_empty?(row, col)
 
-        print("#{player.name}, please select an empty space.\n\n") \
-          if !valid_move && !comp_player
+      print("#{player.name}, please select an empty space.\n\n") \
+        if !valid_move && !comp_player
 
-      else
-
-        print("#{player.name}, please enter a valid row and column.\n\n") \
-          unless comp_player
-
+      if comp_player && !valid_move
+        raise CompTurnError, \
+              "Internal error : computer tried a move on #{row + 1}, #{col + 1}"
       end
-
-      raise CompTurnError, \
-        "Internal error : computer tried a move on \
-        #{row + 1}, #{col + 1}" if comp_player && !valid_move
 
       valid_move
     end
 
-    def get_level(player1)
+    def choose_level(player)
       got_level = false
 
-      if player1.class == TicTacToe::TicTacToeCompPlayer
-        level = TicTacToeCompPlayer::PLAY_LEVEL_TURBO
-
-        got_level = true
-      end
-
       until got_level
-        print("#{player1.name}, \
-              choose the computer play level (E)asy or (T)urbo : ")
+        print("#{player.name}, \
+          choose the computer play level (E)asy or (T)urbo : ")
 
-        level_input = gets.chomp
-
-        level_input.downcase!
+        level_input = gets.chomp.downcase
 
         got_level = true
 
@@ -332,15 +326,22 @@ module TicTacToe
       level
     end
 
+    def get_level(player1)
+      if player1.class == TicTacToe::TicTacToeCompPlayer
+        TicTacToeCompPlayer::PLAY_LEVEL_TURBO
+      else
+        choose_level(player1)
+      end
+    end
+
     def setup_players(player1, player2)
-      comp_level = \
-        player2.class == TicTacToe::TicTacToeCompPlayer ? get_level(player1) : nil
+      if player2.class == TicTacToe::TicTacToeCompPlayer
+        player2.level = get_level(player1)
 
-      player1.level = \
-        comp_level if player1.class == TicTacToe::TicTacToeCompPlayer
-
-      player2.level = \
-        comp_level if player2.class == TicTacToe::TicTacToeCompPlayer
+        if player1.class == TicTacToe::TicTacToeCompPlayer
+          player1.level = player2.level
+        end
+      end
 
       @players << player1 << player2
 
@@ -379,7 +380,7 @@ module TicTacToe
       winner = false
 
       (0..2).each do |x|
-        num_in_row = @board.board.flatten.each_with_index.select do |p, i| 
+        num_in_row = @board.board.flatten.each_with_index.select do |p, i|
           p == piece && i.between?(0 + (x * 3), 2 + (x * 3))
         end
 
@@ -395,7 +396,7 @@ module TicTacToe
       winner = false
 
       (0..2).each do |x|
-        num_in_diagonal = @board.board.flatten.each_with_index.select do |p, i| 
+        num_in_diagonal = @board.board.flatten.each_with_index.select do |p, i|
           p == piece && (i == (0 + x) || i == 4 || i == (8 - x))
         end
 
