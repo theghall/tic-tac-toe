@@ -29,7 +29,7 @@ module GameBases
 			print("\n\n")
 		end
 
-		def put_piece(row, col, char)
+		def put_token(row, col, char)
 			@board[row][col] = char
 		end
 

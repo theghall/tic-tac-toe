@@ -30,7 +30,7 @@ module TicTacToe
 
         col = pos[1]
 
-        good_move = referee.place_piece(self, row.to_i - 1, col.to_i - 1)
+        good_move = referee.place_token(self, row.to_i - 1, col.to_i - 1)
       end
     end
   end
@@ -74,23 +74,24 @@ module TicTacToe
     def level_easy(referee, board)
       avail_spaces = board.empty_spaces
 
-      piece_pos = avail_spaces[rand(avail_spaces.length)]
+      token_pos = avail_spaces[rand(avail_spaces.length)]
 
-      referee.place_piece(self, piece_pos[0], piece_pos[1])
+      referee.place_token(self, token_pos[0], token_pos[1])
     end
 
     # Blocks if able and returns true if able
     def block_in_row?(referee, board)
       block_in_row = false
 
-      board.board.each do |outer|
-        opp_pieces = outer.each { |p| p == (@piece == 'X' ? 'O' : 'X') }
+      opp_token = (@token == 'X' ? 'O' : 'X')
 
-        empty_spaces = outer.each.select { |p| p == board.fill_char }
+      board.board.each_with_index do |outer, o|
+        opp_tokens = outer.each.select { |p| p == opp_token }
 
-        if opp_pieces.length == 2 && empty_spaces.length == 1
+        empty_spaces = outer.each_with_index.select { |p, i| p == board.fill_char }
 
-          referee.place_piece(self, o, empty_spaces[0][1])
+        if opp_tokens.length == 2 && empty_spaces.length == 1
+          referee.place_token(self, o, empty_spaces[0][1])
 
           block_in_row = true
 
@@ -109,18 +110,23 @@ module TicTacToe
 
       block_in_col = false
 
-      opp_pieces = Array.new(board.board_rows)
+      opp_token = (@token == 'X' ? 'O' : 'X')
 
+      opp_tokens = Array.new(board.board_rows)
+
+      # Each space in a row with an opponents token will be selected
+      # Stored with each token is the column in which the token is found
       board.board.each_with_index do |outer, o|
-        opp_pieces[o] = (outer.each_with_index.select \
-                         { |p, i| p == (@piece == 'X' ? 'O' : 'X') })
+        opp_tokens[o] = outer.each_with_index.select { |p, i| p == opp_token }
       end
 
-      # This will not block at 3,2 or 3,3 if 1,1 and 2,1 were blocked at 3,1
-      # Also, since row is blocked first, if 1,3 and 2,3 were blocked by row
+      # Find all opponent tokens in a column by means of a union
+      # Since row is blocked first, if 1,3 and 2,3 were blocked by row
       # then it will not block at 3,1 or 3,2.
+      # :TODO Instead of loop do 2 unions to see which row to block in
+      # :TODO Split check for block in column to another method
       (0..1).each do |i|
-        union = opp_pieces[0 + i] & (opp_pieces[1 + i])
+        union = opp_tokens[0 + i] & (opp_tokens[1 + i])
 
         unless union.empty?
 
@@ -134,7 +140,7 @@ module TicTacToe
         end
       end
 
-      referee.place_piece(self, row, col) if block_in_col
+      referee.place_token(self, row, col) if block_in_col
 
       block_in_col
     end
@@ -143,37 +149,37 @@ module TicTacToe
     def block_diagonally?(referee, board)
       block_diagonally = false
 
-      opp_piece = (@piece == 'X' ? 'O' : 'X')
+      opp_token = (@token == 'X' ? 'O' : 'X')
 
       # No need to check if opponent does not control center
-      if board.board[1][1] == opp_piece
-        corner_pieces_r1 = board.board[0].each_with_index.select \
-          { |p, i| p == opp_piece && (i.zero? || i == 2) }
+      if board.board[1][1] == opp_token
+        corner_tokens_r1 = board.board[0].each_with_index.select \
+          { |p, i| p == opp_token && (i.zero? || i == 2) }
 
-        corner_pieces_r2 = board.board[2].each_with_index.select \
-          { |p, i| p == opp_piece && (i.zero? || i == 2) }
+        corner_tokens_r2 = board.board[2].each_with_index.select \
+          { |p, i| p == opp_token && (i.zero? || i == 2) }
 
 
         # May not block, since the opposite corner may already be
         # blocked
-        if !corner_pieces_r1.empty?
+        if !corner_tokens_r1.empty?
           # block opposite corner
           row = 2
 
-          col = corner_pieces_r1[0][1].zero? ? 2 : 0
+          col = corner_tokens_r1[0][1].zero? ? 2 : 0
 
           block_diagonally = true if board.space_empty?(row, col)
-        elsif !corner_pieces_r2.empty?
+        elsif !corner_tokens_r2.empty?
           # block opposite corner
           row = 0
 
-          col = corner_pieces_r2[0][1].zero? ? 2 : 0
+          col = corner_tokens_r2[0][1].zero? ? 2 : 0
 
           block_diagonally = true if board.space_empty?(row, col)
         end
       end
 
-      referee.place_piece(self, row, col) if block_diagonally
+      referee.place_token(self, row, col) if block_diagonally
 
       block_diagonally
     end
@@ -263,14 +269,14 @@ module TicTacToe
       @board.reset
     end
 
-    def place_piece(player, row, col)
+    def place_token(player, row, col)
       valid_move = valid_move?(player, row, col)
 
       if valid_move
 
         puts("#{player.name} plays '#{player.token}' on #{row + 1}, #{col + 1}")
 
-        @board.put_piece(row, col, player.token)
+        @board.put_token(row, col, player.token)
 
       end
 
@@ -360,12 +366,12 @@ module TicTacToe
       end
     end
 
-    def row_wins?(piece)
+    def row_wins?(token)
       winner = false
 
       (0..2).each do |x|
         num_in_col = @board.board.flatten.each_with_index.select do |p, i|
-          p == piece && (i == 0 + x || i == 3 + x || i == 6 + x)
+          p == token && (i == 0 + x || i == 3 + x || i == 6 + x)
         end
 
         winner = (num_in_col.length == 3)
@@ -376,12 +382,12 @@ module TicTacToe
       winner
     end
 
-    def col_wins?(piece)
+    def col_wins?(token)
       winner = false
 
       (0..2).each do |x|
         num_in_row = @board.board.flatten.each_with_index.select do |p, i|
-          p == piece && i.between?(0 + (x * 3), 2 + (x * 3))
+          p == token && i.between?(0 + (x * 3), 2 + (x * 3))
         end
 
         winner = (num_in_row.length == 3)
@@ -392,12 +398,12 @@ module TicTacToe
       winner
     end
 
-    def diagonal_wins?(piece)
+    def diagonal_wins?(token)
       winner = false
 
       (0..2).each do |x|
         num_in_diagonal = @board.board.flatten.each_with_index.select do |p, i|
-          p == piece && (i == (0 + x) || i == 4 || i == (8 - x))
+          p == token && (i == (0 + x) || i == 4 || i == (8 - x))
         end
 
         winner = (num_in_diagonal.length == 3)
@@ -408,14 +414,14 @@ module TicTacToe
       winner
     end
 
-    def winner?(piece)
+    def winner?(token)
       winner = false
 
-      winner ||= row_wins?(piece)
+      winner ||= row_wins?(token)
 
-      winner ||= col_wins?(piece)
+      winner ||= col_wins?(token)
 
-      winner ||= diagonal_wins?(piece)
+      winner ||= diagonal_wins?(token)
 
       winner
     end

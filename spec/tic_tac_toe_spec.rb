@@ -12,7 +12,7 @@ describe "TicTacToeBoard" do
     let(:board) { TicTacToe::TicTacToeBoard.new }
 
     it { expect(board).to respond_to(:display) }
-    it { expect(board).to respond_to(:put_piece) }
+    it { expect(board).to respond_to(:put_token) }
     it { expect(board).to respond_to(:reset) }
     it { expect(board).to respond_to(:empty_spaces) }
     it { expect(board).to respond_to(:space_empty?) }
@@ -31,12 +31,12 @@ describe "TicTacToeBoard" do
     end
   end
 
-  describe '.put_piece' do
+  describe '.put_token' do
     let(:board) { TicTacToe::TicTacToeBoard.new }
 
-    context "Calling put_piece(0,0,'X')" do
+    context "Calling put_token(0,0,'X')" do
       it "displays an 'X' at 0,0" do
-        board.put_piece(0, 0, 'X')
+        board.put_token(0, 0, 'X')
         expect { board.display }.to output(/X \. \.\n\. \. \.\n\. \. \.\n/).to_stdout
       end
     end
@@ -45,9 +45,9 @@ describe "TicTacToeBoard" do
   describe '.reset' do
     let(:board) { TicTacToe::TicTacToeBoard.new }
 
-    context "Calling reset after calling put_piece((0,0,'X')" do
+    context "Calling reset after calling put_token((0,0,'X')" do
       it "displays an empty board" do
-        board.put_piece(0, 0, 'X')
+        board.put_token(0, 0, 'X')
         board.reset
         expect { board.display }.to output(/\. \. \.\n\. \. \.\n\. \. \.\n/).to_stdout
       end
@@ -58,9 +58,9 @@ describe "TicTacToeBoard" do
 
     let(:board) { TicTacToe::TicTacToeBoard.new }
 
-    context "Calling empty_spaces after calling put_piece(0,0,'X')" do
+    context "Calling empty_spaces after calling put_token(0,0,'X')" do
       it "returns a 2d array of all empty spaces. less 0,0" do
-        board.put_piece(0, 0, 'X')
+        board.put_token(0, 0, 'X')
         expect(board.empty_spaces).to eql([[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]])
       end
     end
@@ -76,9 +76,9 @@ describe "TicTacToeBoard" do
       end
     end
 
-    context "calling space_empty(0,0) after put_piece(0,0,'X')" do
+    context "calling space_empty(0,0) after put_token(0,0,'X')" do
       it "returns false" do
-        board.put_piece(0, 0, 'X')
+        board.put_token(0, 0, 'X')
         expect(board.space_empty?(0,0)).to eql(false)
       end
    end
@@ -122,49 +122,49 @@ describe "TicTacToeReferee" do
 
     it { expect(areferee).to respond_to(:officiate) }
     it { expect(areferee).to respond_to(:new_game) }
-    it { expect(areferee).to respond_to(:place_piece) }
+    it { expect(areferee).to respond_to(:place_token) }
   end
 
-  describe ".place_piece" do
+  describe ".place_token" do
 
     let (:player1) { TicTacToe::TicTacToePlayer.new('X','John') }
     let (:player2) { TicTacToe::TicTacToePlayer.new('O','Jane') }
     let (:areferee) { TicTacToe::TicTacToeReferee.new }
 
-    context "Player1 puts piece on 0,3" do
+    context "Player1 puts token on 0,3" do
       it "returns false" do
-        expect(areferee.place_piece(player1,0,3)).to eql(false)
+        expect(areferee.place_token(player1,0,3)).to eql(false)
       end
     end
 
-    context "Player1 puts piece on 3,0" do
+    context "Player1 puts token on 3,0" do
       it "returns false" do
-        expect(areferee.place_piece(player1,3,0)).to eql(false)
+        expect(areferee.place_token(player1,3,0)).to eql(false)
       end
     end
 
-    context "Player1 puts piece on -1,0" do
+    context "Player1 puts token on -1,0" do
       it "returns false" do
-       expect(areferee.place_piece(player1,-1,0)).to eql(false)
+       expect(areferee.place_token(player1,-1,0)).to eql(false)
       end
     end
 
-    context "Player1 puts piece on 0,-1" do
+    context "Player1 puts token on 0,-1" do
       it "returns false" do
-        expect(areferee.place_piece(player1,0,-1)).to eql(false)
+        expect(areferee.place_token(player1,0,-1)).to eql(false)
       end
     end
 
-    context "Player1 puts piece on 0,0 on empty board" do
+    context "Player1 puts token on 0,0 on empty board" do
       it "returns true" do
-        expect(areferee.place_piece(player1,0,0)).to eql(true)
+        expect(areferee.place_token(player1,0,0)).to eql(true)
       end
     end
 
-    context "Player1 puts piece on 0,0 on board with token on 0,0" do
+    context "Player1 puts token on 0,0 on board with token on 0,0" do
       it "returns false" do
-        areferee.place_piece(player1,0,0)
-        expect(areferee.place_piece(player2,0,0)).to eql(false)
+        areferee.place_token(player1,0,0)
+        expect(areferee.place_token(player2,0,0)).to eql(false)
       end
     end
   end
